@@ -1,20 +1,18 @@
 import express from "express"; 
 import dotenv from "dotenv"; 
 import connectDB from "./src/db/db.js"; 
-// import userRouter from "./src/routes/userRouter.js"; 
+import userRouter from "./src/routes/userRouter.js"; 
+import shipRouter from "./src/routes/shipRouter.js";
 // import googleRouter from "./src/routes/googleRouter.js"; 
 import { apiError } from "./src/utils/apiError.js"; 
-// import jwt from "jsonwebtoken"; 
 dotenv.config(); 
 const PORT = process.env.PORT || 3000; 
 const app = express(); 
 app.use(express.json()); 
 app.get("/", (req, res) => { res.send("Helloooo"); }); 
 
-// All routes 
-// app.use("/users", userRouter); 
-// app.use("/auth", googleRouter); 
-// app.use(cors("*"))
+app.use("/auth", userRouter); 
+app.use("/ships", shipRouter); 
 
 const startServer = async () => {
     try {

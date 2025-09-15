@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
@@ -11,7 +12,7 @@ const userSchema = new mongoose.Schema(
     },
 
     email: {
-      type: String,
+      type: String,  
       required: [true, "Email is required"],
       unique: true,
       lowercase: true,
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema(
         message: "Invalid email format",
       },
     },
-    
+
     username: { 
         type: String, 
         unique: true, 
@@ -77,6 +78,6 @@ userSchema.methods.newRefreshToken = function () {
   );
 };
 
-const User = new mongoose.model("User", userSchema);
+export const User = new mongoose.model("User", userSchema);
 
 

@@ -27,22 +27,38 @@ const shipSchema = new mongoose.Schema(
     },
 
     name: {
-      type: String, 
+      type: String,
       minlength: [2, "Ship name must be at least 2 characters long"],
       trim: true,
-      required: [true, "Ship Name is required"]
+      required: [true, "Ship Name is required"],
     },
 
     source: {
       type: String,
-      required: [true, "Source port is required"],
       trim: true,
+      validate: {
+        validator: function (v) {
+          if (this.traveling) {
+            return typeof v === "string" && v.trim().length > 0;
+          }
+          return true;
+        },
+        message: "Source port is required when the ship is traveling",
+      },
     },
 
     destination: {
       type: String,
-      required: [true, "Destination port is required"],
       trim: true,
+      validate: {
+        validator: function (v) {
+          if (this.traveling) {
+            return typeof v === "string" && v.trim().length > 0;
+          }
+          return true;
+        },
+        message: "Destination port is required when the ship is traveling",
+      },
     },
 
     email: {
@@ -57,6 +73,16 @@ const shipSchema = new mongoose.Schema(
       },
     },
 
+    isTraveling: {
+      type: Boolean,
+      default: false,
+    },
+
+    isArchived: {
+      type: Boolean,
+      default: false,
+    },
+
     crew: {
       type: [crewSchema], 
       default: [],
@@ -65,4 +91,6 @@ const shipSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Ship", shipSchema);
+const Ship = new mongoose.model("Ship", shipSchema);
+
+export default Ship
