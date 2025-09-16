@@ -5,18 +5,24 @@ import userRouter from "./src/routes/userRouter.js";
 import shipRouter from "./src/routes/shipRouter.js";
 // import googleRouter from "./src/routes/googleRouter.js"; 
 import { apiError } from "./src/utils/apiError.js"; 
+import cors from "cors";
+
 dotenv.config(); 
+
 const PORT = process.env.PORT || 3000; 
+
 const app = express(); 
+
+
 app.use(express.json()); 
-app.get("/", (req, res) => { res.send("Helloooo"); }); 
+app.use(cors());
 
 app.use("/auth", userRouter); 
 app.use("/ships", shipRouter); 
 
 const startServer = async () => {
     try {
-
+        
         const dbConnected = await connectDB(); 
 
         if (!dbConnected) { throw new apiError(500, "Couldn't Connect to DB"); } 
@@ -28,7 +34,9 @@ const startServer = async () => {
         console.error("Startup Error:", error); process.exit(1); 
     }
 }
-        
+
+app.get("/", (req, res) => { res.send("Helloooo"); });
+ 
 startServer();
 
     

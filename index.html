@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --success: #4bb543;
+            --danger: #ff3333;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--light);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Glassmorphism Card */
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .nav-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid white;
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .table th {
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .align-center {
+            align-items: center;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="#" class="nav-brand">ShipTrack</a>
+            <div class="nav-links" id="authLinks">
+                <a href="#" class="nav-link" data-section="login">Login</a>
+                <a href="#" class="nav-link" data-section="register">Register</a>
+            </div>
+            <div class="nav-links d-none" id="userLinks">
+                <a href="#" class="nav-link" data-section="ships">Ships</a>
+                <a href="#" class="nav-link" data-section="add-ship">Add Ship</a>
+                <a href="#" class="nav-link" id="logoutBtn">Logout</a>
+            </div>
+        </nav>
+
+        <!-- Login Section -->
+        <section id="login" class="section active">
+            <div class="card" style="max-width: 500px; margin: 0 auto;">
+                <h2 class="text-center mb-4">Welcome Back</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label" for="loginUsername">Username</label>
+                        <input type="text" class="form-control" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="loginPassword">Password</label>
+                        <input type="password" class="form-control" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                </form>
+                <p class="text-center mt-3">
+                    Don't have an account? <a href="#" class="nav-link d-inline" data-section="register">Register here</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register" class="section">
+            <div class="card" style="max-width: 500px; margin: 0 auto;">
+                <h2 class="text-center mb-4">Create Account</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="registerName">Full Name</label>
+                        <input type="text" class="form-control" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="registerUsername">Username</label>
+                        <input type="text" class="form-control" id="registerUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="registerEmail">Email</label>
+                        <input type="email" class="form-control" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="registerPassword">Password</label>
+                        <input type="password" class="form-control" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="registerRole">Role</label>
+                        <select class="form-control" id="registerRole" required>
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+                </form>
+                <p class="text-center mt-3">
+                    Already have an account? <a href="#" class="nav-link d-inline" data-section="login">Login here</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Ships List Section -->
+        <section id="ships" class="section">
+            <div class="d-flex justify-between align-center mb-4">
+                <h2>Ship Management</h2>
+                <button class="btn btn-primary" data-section="add-ship">
+                    <i class="fas fa-plus"></i> Add New Ship
+                </button>
+            </div>
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>UID</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipsList">
+                            <!-- Ships will be loaded here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add/Edit Ship Section -->
+        <section id="add-ship" class="section">
+            <div class="card" style="max-width: 800px; margin: 0 auto;">
+                <h2 class="mb-4" id="shipFormTitle">Add New Ship</h2>
+                <form id="shipForm">
+                    <input type="hidden" id="shipId">
+                    <div class="form-group">
+                        <label class="form-label" for="shipName">Ship Name</label>
+                        <input type="text" class="form-control" id="shipName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="shipUid">Ship UID</label>
+                        <input type="text" class="form-control" id="shipUid" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="source">Source</label>
+                        <input type="text" class="form-control" id="source" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="destination">Destination</label>
+                        <input type="text" class="form-control" id="destination" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Contact Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <div class="d-flex gap-2">
+                            <label class="form-check">
+                                <input type="checkbox" id="isTraveling" class="form-check-input">
+                                <span class="form-check-label">Currently Traveling</span>
+                            </label>
+                            <label class="form-check">
+                                <input type="checkbox" id="isArchived" class="form-check-input">
+                                <span class="form-check-label">Archived</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="crew">Crew (comma separated)</label>
+                        <textarea class="form-control" id="crew" rows="3" placeholder="John Doe, Jane Smith"></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save Ship</button>
+                        <button type="button" class="btn btn-outline" data-section="ships">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // API Base URL - Update this to match your backend URL
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // DOM Elements
+        const authLinks = document.getElementById('authLinks');
+        const userLinks = document.getElementById('userLinks');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const shipForm = document.getElementById('shipForm');
+        const shipsList = document.getElementById('shipsList');
+
+        // Authentication state
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let authToken = localStorage.getItem('authToken') || null;
+
+        // Initialize the app
+        function initApp() {
+            updateAuthUI();
+            setupEventListeners();
+            if (currentUser) {
+                showSection('ships');
+                loadShips();
+            } else {
+                showSection('login');
+            }
+        }
+
+        // Update UI based on authentication state
+        function updateAuthUI() {
+            if (currentUser) {
+                authLinks.classList.add('d-none');
+                userLinks.classList.remove('d-none');
+            } else {
+                authLinks.classList.remove('d-none');
+                userLinks.classList.add('d-none');
+            }
+        }
+
+        // Show a specific section and hide others
+        function showSection(sectionId) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === sectionId) {
+                    section.classList.add('active');
+                }
+            });
+
+            // Update active nav link
+            navLinks.forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Special handling for certain sections
+            if (sectionId === 'ships') {
+                loadShips();
+            } else if (sectionId === 'add-ship') {
+                document.getElementById('shipFormTitle').textContent = 'Add New Ship';
+                document.getElementById('shipForm').reset();
+                document.getElementById('shipId').value = '';
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Navigation
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = e.currentTarget.dataset.section;
+                    showSection(sectionId);
+                });
+            });
+
+            // Logout
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+
+            // Login form
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+            }
+
+            // Register form
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegister);
+            }
+
+            // Ship form
+            if (shipForm) {
+                shipForm.addEventListener('submit', handleShipSubmit);
+            }
+        }
+
+        // API Request Helper
+        async function apiRequest(url, method = 'GET', data = null, requiresAuth = true) {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+
+            if (requiresAuth && authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            const config = {
+                method,
+                headers,
+                credentials: 'include' // For cookies
+            };
+
+            if (data) {
+                config.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${url}`, config);
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(responseData.message || 'Something went wrong');
+                }
+
+                return responseData;
+            } catch (error) {
+                console.error('API Error:', error);
+                alert(error.message || 'An error occurred');
+                throw error;
+            }
+        }
+
+        // Handle Login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const data = await apiRequest('/users/login', 'POST', { username, password }, false);
+                
+                // Save user data and token
+                currentUser = data.user;
+                authToken = data.accessToken;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('authToken', authToken);
+                
+                // Update UI
+                updateAuthUI();
+                showSection('ships');
+                loadShips();
+                
+                // Show success message
+                alert('Login successful!');
+            } catch (error) {
+                console.error('Login failed:', error);
+                alert('Login failed. Please check your credentials and try again.');
+            }
+        }
+
+        // Handle Register
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const userData = {
+                name: document.getElementById('registerName').value,
+                username: document.getElementById('registerUsername').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                role: document.getElementById('registerRole').value
+            };
+
+            try {
+                const data = await apiRequest('/users/register', 'POST', userData, false);
+                alert('Registration successful! Please login.');
+                showSection('login');
+                registerForm.reset();
+            } catch (error) {
+                console.error('Registration failed:', error);
+                alert('Registration failed. ' + (error.message || 'Please try again.'));
+            }
+        }
+
+        // Handle Logout
+        function logout() {
+            currentUser = null;
+            authToken = null;
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            updateAuthUI();
+            showSection('login');
+            loginForm.reset();
+        }
+
+        // Load Ships
+        async function loadShips() {
+            try {
+                const data = await apiRequest('/ships');
+                renderShips(data.data || []);
+            } catch (error) {
+                console.error('Failed to load ships:', error);
+            }
+        }
+
+        // Render Ships
+        function renderShips(ships) {
+            if (!shipsList) return;
+
+            if (ships.length === 0) {
+                shipsList.innerHTML = '<tr><td colspan="6" class="text-center">No ships found</td></tr>';
+                return;
+            }
+
+            shipsList.innerHTML = ships.map(ship => `
+                <tr>
+                    <td>${ship.name}</td>
+                    <td>${ship.shipUID}</td>
+                    <td>${ship.source || 'N/A'}</td>
+                    <td>${ship.destination || 'N/A'}</td>
+                    <td>
+                        <span class="badge ${ship.isTraveling ? 'bg-success' : 'bg-secondary'}">
+                            ${ship.isTraveling ? 'Traveling' : 'Docked'}
+                        </span>
+                        ${ship.isArchived ? '<span class="badge bg-danger ms-1">Archived</span>' : ''}
+                    </td>
+                    <td class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline edit-ship" data-id="${ship._id}">Edit</button>
+                        <button class="btn btn-sm btn-danger delete-ship" data-id="${ship._id}">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-ship').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const shipId = e.currentTarget.dataset.id;
+                    editShip(shipId);
+                });
+            });
+
+            document.querySelectorAll('.delete-ship').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const shipId = e.currentTarget.dataset.id;
+                    if (confirm('Are you sure you want to delete this ship?')) {
+                        deleteShip(shipId);
+                    }
+                });
+            });
+        }
+
+        // Edit Ship
+        async function editShip(shipId) {
+            try {
+                const data = await apiRequest(`/ships/${shipId}`);
+                const ship = data.shipData || data;
+                
+                document.getElementById('shipId').value = ship._id;
+                document.getElementById('shipName').value = ship.name;
+                document.getElementById('shipUid').value = ship.shipUID;
+                document.getElementById('source').value = ship.source || '';
+                document.getElementById('destination').value = ship.destination || '';
+                document.getElementById('email').value = ship.email || '';
+                document.getElementById('isTraveling').checked = ship.isTraveling || false;
+                document.getElementById('isArchived').checked = ship.isArchived || false;
+                document.getElementById('crew').value = Array.isArray(ship.crew) ? ship.crew.join(', ') : '';
+                
+                document.getElementById('shipFormTitle').textContent = 'Edit Ship';
+                showSection('add-ship');
+            } catch (error) {
+                console.error('Failed to load ship:', error);
+            }
+        }
+
+        // Handle Ship Form Submit
+        async function handleShipSubmit(e) {
+            e.preventDefault();
+            
+            const shipId = document.getElementById('shipId').value;
+            const shipData = {
+                name: document.getElementById('shipName').value,
+                shipUID: document.getElementById('shipUid').value,
+                source: document.getElementById('source').value,
+                destination: document.getElementById('destination').value,
+                email: document.getElementById('email').value,
+                isTraveling: document.getElementById('isTraveling').checked,
+                isArchived: document.getElementById('isArchived').checked,
+                crew: document.getElementById('crew').value.split(',').map(s => s.trim()).filter(Boolean)
+            };
+
+            try {
+                if (shipId) {
+                    // Update existing ship
+                    await apiRequest(`/ships/${shipId}`, 'PUT', shipData);
+                    alert('Ship updated successfully!');
+                } else {
+                    // Create new ship
+                    await apiRequest('/ships', 'POST', shipData);
+                    alert('Ship created successfully!');
+                }
+                
+                showSection('ships');
+                loadShips();
+                shipForm.reset();
+            } catch (error) {
+                console.error('Failed to save ship:', error);
+                alert('Failed to save ship: ' + (error.message || 'Please try again.'));
+            }
+        }
+
+        // Delete Ship
+        async function deleteShip(shipId) {
+            try {
+                await apiRequest(`/ships/${shipId}`, 'DELETE');
+                alert('Ship deleted successfully!');
+                loadShips();
+            } catch (error) {
+                console.error('Failed to delete ship:', error);
+                alert('Failed to delete ship: ' + (error.message || 'Please try again.'));
+            }
+        }
+
+        // Initialize the application when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
